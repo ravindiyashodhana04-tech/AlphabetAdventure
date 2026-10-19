@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alphabet Adventure</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- Decorative floating sparkles (purely visual, sit behind content) -->
+  <span class="sky-deco d1" aria-hidden="true">✨</span>
+  <span class="sky-deco d2" aria-hidden="true">⭐</span>
+  <span class="sky-deco d3" aria-hidden="true">🌟</span>
+  <span class="sky-deco d4" aria-hidden="true">✨</span>
+
+  <!-- Top bar: shows during games, hidden on the title screen -->
+  <header id="game-header" class="hidden">
+    <button id="back-btn" aria-label="Back to levels">←</button>
+    <div id="progress-track">
+      <div id="progress-fill"></div>
+    </div>
+    <div id="star-count">⭐ <span id="star-total">0</span></div>
+    <button id="music-toggle" aria-label="Toggle music">🔊</button>
+  </header>
+
+  <!-- Persistent mascot that appears in the corner and talks to the child -->
+  <div id="mascot-corner" class="hidden" aria-hidden="true">
+    <div id="mascot-bubble" class="mascot-bubble hidden"></div>
+    <div id="mascot-face">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="58" r="34" fill="#FFDCB8"/>
+        <path d="M12 46 Q50 4 88 46 Q88 30 74 22 Q50 8 26 22 Q12 30 12 46 Z" fill="#8B5A2B"/>
+        <circle cx="17" cy="60" r="13" fill="#8B5A2B"/>
+        <circle cx="83" cy="60" r="13" fill="#8B5A2B"/>
+        <circle cx="17" cy="50" r="6" fill="#FF6B6B"/>
+        <circle cx="83" cy="50" r="6" fill="#FF6B6B"/>
+        <circle cx="36" cy="58" r="5.5" fill="#2D3047"/>
+        <circle cx="64" cy="58" r="5.5" fill="#2D3047"/>
+        <circle cx="37.5" cy="56" r="1.8" fill="#FFFFFF"/>
+        <circle cx="65.5" cy="56" r="1.8" fill="#FFFFFF"/>
+        <circle cx="24" cy="68" r="7" fill="#FF8FB1" opacity="0.55"/>
+        <circle cx="76" cy="68" r="7" fill="#FF8FB1" opacity="0.55"/>
+        <path d="M36 76 Q50 88 64 76" stroke="#2D3047" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Full-screen pop-up shown briefly for correct answers and level completion -->
+  <div id="reward-popup" class="reward-popup hidden">
+    <div class="reward-burst">
+      <span>⭐</span><span>🎉</span><span>⭐</span><span>🌟</span><span>🎊</span><span>✨</span><span>💫</span>
+    </div>
+    <div id="reward-text" class="reward-text"></div>
+  </div>
+
+  <!-- SCREEN 1: Title -->
+  <section id="screen-title" class="screen">
+    <div class="mascot mascot-bounce title-narrator" aria-hidden="true">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="58" r="34" fill="#FFDCB8"/>
+        <path d="M12 46 Q50 4 88 46 Q88 30 74 22 Q50 8 26 22 Q12 30 12 46 Z" fill="#8B5A2B"/>
+        <circle cx="17" cy="60" r="13" fill="#8B5A2B"/>
+        <circle cx="83" cy="60" r="13" fill="#8B5A2B"/>
+        <circle cx="17" cy="50" r="6" fill="#FF6B6B"/>
+        <circle cx="83" cy="50" r="6" fill="#FF6B6B"/>
+        <circle cx="36" cy="58" r="5.5" fill="#2D3047"/>
+        <circle cx="64" cy="58" r="5.5" fill="#2D3047"/>
+        <circle cx="37.5" cy="56" r="1.8" fill="#FFFFFF"/>
+        <circle cx="65.5" cy="56" r="1.8" fill="#FFFFFF"/>
+        <circle cx="24" cy="68" r="7" fill="#FF8FB1" opacity="0.55"/>
+        <circle cx="76" cy="68" r="7" fill="#FF8FB1" opacity="0.55"/>
+        <path d="M36 76 Q50 88 64 76" stroke="#2D3047" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <h1>Alphabet Adventure</h1>
+    <p class="tagline">Let's learn the alphabet!</p>
+    <button id="start-btn" class="btn-primary">Start</button>
+  </section>
+
+  <!-- SCREEN 2: Level select -->
+  <section id="screen-levels" class="screen hidden">
+    <h2>Choose a Level</h2>
+    <div id="level-grid"></div>
+  </section>
+
+  <!-- SCREEN 3: Learn the letter -->
+  <section id="screen-learn" class="screen hidden">
+    <p class="step-label">Learn the letter</p>
+    <div class="letter-card">
+      <div id="learn-letter" class="big-letter"></div>
+      <div id="learn-emoji" class="big-emoji"></div>
+      <div id="learn-word" class="word-label"></div>
+    </div>
+    <button id="learn-speak-btn" class="btn-round" aria-label="Hear it again">🔊</button>
+    <button id="learn-next-btn" class="btn-primary">Next</button>
+  </section>
+
+  <!-- SCREEN 4: Find the letter -->
+  <section id="screen-find" class="screen hidden">
+    <p class="step-label">Find the letter</p>
+    <p id="find-prompt" class="prompt-text"></p>
+    <div id="find-options" class="option-row"></div>
+    <p id="find-feedback" class="feedback"></p>
+  </section>
+
+  <!-- SCREEN 5: Match the picture -->
+  <section id="screen-match" class="screen hidden">
+    <p class="step-label">Match the picture</p>
+    <div id="match-letter" class="mid-letter"></div>
+    <div id="match-options" class="option-row"></div>
+    <p id="match-feedback" class="feedback"></p>
+  </section>
+
+  <!-- SCREEN 6: Listen and choose -->
+  <section id="screen-listen" class="screen hidden">
+    <p class="step-label">Listen and choose</p>
+    <button id="listen-speak-btn" class="btn-round btn-round-large" aria-label="Play the sound">🔊</button>
+    <div id="listen-options" class="option-row"></div>
+    <p id="listen-feedback" class="feedback"></p>
+  </section>
+
+  <!-- SCREEN 7: Trace the letter -->
+  <section id="screen-trace" class="screen hidden">
+    <p class="step-label">Trace the letter</p>
+    <p id="trace-target" class="prompt-text"></p>
+    <canvas id="trace-canvas" width="340" height="340"></canvas>
+    <div class="trace-buttons">
+      <button id="trace-clear-btn" class="btn-secondary">Clear</button>
+      <button id="trace-done-btn" class="btn-primary">I'm done!</button>
+    </div>
+    <p id="trace-feedback" class="feedback"></p>
+  </section>
+
+  <!-- SCREEN 8: Build the word -->
+  <section id="screen-build" class="screen hidden">
+    <p class="step-label">Build the word</p>
+    <div id="build-emoji" class="big-emoji"></div>
+    <div id="build-slots" class="build-slots"></div>
+    <div id="build-tiles" class="build-tiles"></div>
+    <p id="build-feedback" class="feedback"></p>
+  </section>
+
+  <!-- SCREEN 9: Level complete -->
+  <section id="screen-complete" class="screen hidden">
+    <div class="mascot" aria-hidden="true">🎉</div>
+    <h2>Level complete!</h2>
+    <p id="complete-summary" class="tagline"></p>
+    <button id="complete-levels-btn" class="btn-primary">Choose another level</button>
+  </section>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
